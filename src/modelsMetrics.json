@@ -1,0 +1,116 @@
+{   
+    "Ref":{
+        "Training Time":null,
+        "Inference Time":null,
+        "Accuracy":null,
+        "wAcc":null,
+        "kwargs":null,
+        "BatchSize":null,
+        "TrainingSize":null,
+        "InferenceSize":null,
+        "ClassNumber":null
+    },
+
+    "YOLO":{
+        "Training Time":null,
+        "Inference Time":"unrecorded, not too long though",
+        "Accuracy":null,
+        "wAcc":null,
+        "kwargs":null,
+        "BatchSize":15,
+        "TrainingSize":null,
+        "InferenceSize":17500,
+        "ClassNumber":null
+    },
+
+    "RetinaFace":{
+        "Training Time":null,
+        "Inference Time":"unrecorded, but between 15-20 hours",
+        "Accuracy":null,
+        "wAcc":null,
+        "kwargs":null,
+        "BatchSize":"batches unavailable",
+        "TrainingSize":null,
+        "InferenceSize":17500,
+        "ClassNumber":null
+    },
+
+    "VGG_scratch":{
+        "Training Time":"unrecorded, process killed after 20 hours",
+        "Inference Time":"no inferences made. Training unfinished.",
+        "Accuracy":null,
+        "wAcc":null,
+        "kwargs":{
+            "epochs":20,
+            "optimizer":"SGD",
+            "loss":"CrossEntropy",
+            "learning_rate":0.005,
+            "momentum":0.9
+        },
+        "BatchSize":8,
+        "TrainingSize":"75%",
+        "InferenceSize":"25%",
+        "ClassNumber":105
+    },
+
+    "BatchRetinaFace":{
+        "Training Time":null,
+        "Inference Time":527.70762,
+        "Accuracy":null,
+        "wAcc":null,
+        "kwargs":{
+            "threshold":0.95,
+            "gpu_id":-1
+        },
+        "BatchSize":100,
+        "TrainingSize":null,
+        "InferenceSize":17534,
+        "ClassNumber":null
+    },
+
+    "SimpleCNN":{
+        "Training Time":57332.11050,
+        "Inference Time":32.30422,
+        "Accuracy":0.17,
+        "wAcc":0.15,
+        "kwargs":{
+            "epochs":200,
+            "optimizer":"Adam",
+            "loss":"CrossEntropy"
+        },
+        "BatchSize":100,
+        "TrainingSize":14038,
+        "InferenceSize":3462,
+        "ClassNumber":105
+    },
+
+    "PreTrainedGrayVGGFace":{
+        "Training Time":null,
+        "Inference Time":662.59734,
+        "Accuracy":0.66,
+        "wAcc":0.77,
+        "kwargs":null,
+        "BatchSize":100,
+        "TrainingSize":null,
+        "InferenceSize":6131,
+        "ClassNumber":{
+            "ground":2622,
+            "predicted":38
+        }
+    },
+
+    "PreTrainedRGBVGGFace":{
+        "Training Time":null,
+        "Inference Time":664.15717,
+        "Accuracy":0.64,
+        "wAcc":0.75,
+        "kwargs":null,
+        "BatchSize":100,
+        "TrainingSize":null,
+        "InferenceSize":6131,
+        "ClassNumber":{
+            "ground":2622,
+            "predicted":38
+        }
+    }
+}

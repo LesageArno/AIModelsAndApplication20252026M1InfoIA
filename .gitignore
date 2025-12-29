@@ -1,4 +1,14 @@
 src/working
+src/working_coloured
 src/src_img
 src/.venv
 src/__pycache__
+src/models/rcmalli_vggface_tf_vgg16.h5
+report/report/Repport AIMA.aux
+report/report/Repport AIMA.bbl
+report/report/Repport AIMA.blg
+report/report/Repport AIMA.fdb_latexmk
+report/report/Repport AIMA.fls
+report/report/Repport AIMA.log
+report/report/Repport AIMA.out
+report/report/Repport AIMA.synctex.gz

@@ -39,7 +39,7 @@ class RetinaExtractor():
         df.columns = ["path", "file"]
         self.df = df
     
-    def extractFaces(self, batch_size:int=100, threshold:float=0.95, gpu_id:int=-1, out:str = "working", gray:bool = True, additionalPreprocessing:bool = False) -> None:
+    def extractFaces(self, batch_size:int=100, threshold:float=0.95, gpu_id:int=-1, out:str = "working") -> None:
         """Function to extract the face of each image whose path is stored within self.df. The extracted faces are then stored into JPEG within the `out` folder.
 
         Args:
@@ -47,8 +47,6 @@ class RetinaExtractor():
             threshold (float, optional): The confidence parameter of Retina. Defaults to 0.95.
             gpu_id (int, optional): Set to 0 to use GPU and to -1 to use CPU. Defaults to -1.
             out (str, optional): Folder to save all the pictures. Defaults to "working".
-            gray (bool, optional): Save the picture as grayscale. Defaults to True.
-            additionalPreprocessing (bool, optional): Equlize luminosity and apply gaussian filter to remove high frequencies. Defaults to False.
         """
         # Function to load batch of images on the fly
         def loadImage(path:str) -> Image:
@@ -91,17 +89,18 @@ class RetinaExtractor():
                 im = Image.fromarray(image_batch[faceIndex])
                 im = im.crop((x1, y1, x2, y2))
                 
-                # additional Preprocessing
-                if gray:
-                    im = im.convert("L")
-                if additionalPreprocessing:
-                    im = ImageOps.equalize(im)
-                    im = im.filter(ImageFilter.GaussianBlur(2))
-                    
-                # Save the picture
+                # Save in RGB
+                with open(os.path.join(f"{out}_coloured", f"{self.df.iloc[i*batch_size+faceIndex, 1]}-person-nn-bb-{x1}-{y1}-{x2}-{y2}.jpg"), "w") as file:
+                    im.save(file)
+                
+                # Convert to grayscale
+                im = im.convert("L")
+
+                # Save in Grayscale
                 with open(os.path.join(out, f"{self.df.iloc[i*batch_size+faceIndex, 1]}-person-nn-bb-{x1}-{y1}-{x2}-{y2}.jpg"), "w") as file:
                     im.save(file)
-    
+                    
+        print(f"Batch number: {i}/{batchNumber}, processed images: {i*batch_size}/{maxCount}, undetected faces: {undetectedFace}, {time.time()-begin:.5f}s")
                
 if __name__ == "__main__":
     extractor = RetinaExtractor()
