@@ -1,0 +1,32 @@
+RetinaFace: "RetinaFace" {
+  style.opacity: 0.3
+}
+
+Dataset -> RetinaFace: alternative {
+  style.opacity: 0.3
+}
+RetinaFace -> Resize 224x224: {
+  style.opacity: 0.3
+}
+
+Dataset -> BatchFace: default
+BatchFace -> Resize 224x224
+Resize 224x224 -> Gray-scale: default
+Gray-scale -> Prepare Batches
+
+Resize 224x224 -> Prepare Batches: alternative {
+  style.opacity: 0.3
+}
+
+Prepare Batches -> Train alternative model: alternative {
+  style.opacity: 0.3
+}
+Train alternative model: {
+  style.opacity: 0.3
+}
+
+Prepare Batches -> Filter celebrities: if VGG Face
+Filter celebrities -> Inference
+Train alternative model -> Inference: {
+  style.opacity: 0.3
+}
