@@ -14,6 +14,13 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 \usepackage[dvipsnames]{xcolor}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{hhline}
+\usepackage{colortbl}
+\usepackage{arydshln}
+\usepackage{pdflscape}
+
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -180,29 +187,141 @@ Please provide an abstract of no more than 250 words in a single paragraph. Abst
 
     
 \section{Results}\label{results}
+    In this section, we will describe multiple models build as well as their components. These models will, in the end, be assessed and compared altogether. 
+    The assessment will focus on multiple metrics including training and inference time, accuracy, the number of supported celebrities, as well as other case-by-case parameters. 
+    
+    \subsection{Models description and first results}
+    Here is a small description of each model used and their corresponding pipeline:
+    
+    \subsubsection*{Scratch VGG Face-Descriptor} The first model attempted in this project consists in a simple pipeline with the goal being to train from scratch the architecture of the VGG-16 Face-Descriptor model.
+    To achieve this, we strictly followed the given instructions for this project and proceed with the following pipeline:
+    \begin{enumerate}[noitemsep, partopsep=0pt]
+        \item \texttt{YOLO-11n} to extract the persons,
+        \item \texttt{Retina-Face} to extract person's faces,
+        \item \texttt{Additional preprocessing}: Normalise pixel range from [\![0,255]\!] to [0,1],
+        \item \texttt{Custom VGG16}: A CNN to predict the person on the picture, it is adapted using \textit{nn.AdaptiveAvgPool2d((7, 7))} such that it is possible to have picture of different sizes as input.
+    \end{enumerate} 
+
+    This model is probably the one following the most the initial instructions, but it is also the one being the furthest from practicality. 
+    Indeed, we use \texttt{YOLO-11n} despite stating in the methodology that it is not a good choice and we use Retina-Face instead of Batch-Face, thus resulting in very long preprocessing time between 15 and 20 hours.
+    Additionally, the training of the CNN itself is outrageously long with the training of this model being aborted after 20 hours and only 20 epochs without probant results. 
+    Even though we tried to "prune" the model architecture to reduce the training time, the constat did not change.     
+
+    \subsubsection*{Simple Gray-CNN} The second model was inspired from the first idea to reduce training time of the preceding model (pruning the number of layer in VGG16). 
+    The idea was to speed up the training process by adding further preprocessing and by trying a very simple CNN instead of the VGG16 model itself. In the end, our CNN used 8 layers instead of 23.
+    Here is the pipeline of this model:
+    \begin{enumerate}[noitemsep, partopsep=0pt]
+        \item \texttt{Batch-Face} to extract person's faces rapidly and filter images where faces are not recognised,
+        \item \texttt{Additional preprocessing}: Resize images to 224x224, convert to gray-scale, normalise pixel range from [\![0,255]\!] to [0,1], and organise pictures in batches,
+        \item \texttt{Simple CNN}: A CNN to predict the person on the picture.
+    \end{enumerate}
+
+    This model is the most general working model we made in the sense that it is capable of recognising all the celebrities in our dataset.
+    Unfortunately, it has some flows including a long training time (approximately 16 hours) and a low accuracy (17\%) and weighted accuracy (15\%) on the test set.
+
+    Still, it is interesting to observe that such model is capable of identifying pieces of information on these pictures such that it is possible to have a better accuracy that the one obtained by a fully random model.
+    
+    Here is the confusion matrix for this model:
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.7\linewidth]{diagram/CNN Confusion Matrix.png}
+        \caption{Confusion Matrix of the Simple Gray-CNN}
+        \label{fig:CNNgray}
+    \end{figure}
+
+    \subsubsection*{Pre-trained VGG Face-Descriptor} Later on, by finding the weights of the original VGG-Face Descriptor model on \cite{rcmalliKerasVGGFaces} GitHub repository, we decided to use them in order to infer directly the name of the celebrities on our pictures.
+    Here is the pipeline used in this case:
+    \begin{enumerate}[noitemsep, partopsep=0pt]
+        \item \texttt{Batch-Face} to extract person's faces rapidly and filter images where faces are not recognised,
+        \item \texttt{Additional preprocessing}: Resize images to 224x224, convert to gray-scale (for gray-scale version), normalise pixel range from [\![0,255]\!] to [0,1], and organise pictures in batches,
+        \item \texttt{Pre-trained VGG Face-Descriptor}: A VGG16 model with specialised weight to predict the person on a picture.
+    \end{enumerate}
+
+    With these models, we finally achieved good accuracies above 64\% (above 0.75\% for the weighted accuracy), but at the cost of model scalability. 
+    Indeed, the model is no longer able to recognise the 105 celebrities of our dataset, but only a small fraction of it: 38 celebrities.
+
+    Here are the confusion matrices for these models:
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.7\linewidth]{diagram/VGG16 Confusion Matrix.png}
+        \caption{Confusion Matrix of the Pre-trained VGG Face-Descriptor [Gray]}
+        \label{fig:VGGPretrained-gray}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=.7\linewidth]{diagram/RGB VGG16 Confusion Matrix.png}
+        \caption{Confusion Matrix of the Pre-trained VGG Face-Descriptor [RGB]}
+        \label{fig:VGGPretrained-rgb}
+    \end{figure}
+
+    \subsection{Comparison of the models}
+
+    Now that we have briefly seen each model we will use, we want to compare them together. On table \ref{tab:comparative}, you will find the details for all the models and their respective pipeline.
+
     Lorem Ipsum
 
-    \subsection{Empty B}
-        Lorem Ipsum
+    Lorem Ipsum
 
-        \subsubsection{Résultats et discussions}
-            Lorem Ipsum
+    Lorem Ipsum
 
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
-            Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
+    Lorem Ipsum
 
-        %%%%%% ------------------------------------------------------------------- %%%%%
+    Lorem Ipsum
+
+    Lorem Ipsum
+
+    Lorem Ipsum
+
+    Lorem Ipsum
+
+
+
+    \onecolumn
+    \begin{landscape}
+        {
+            \scriptsize
+            \setlength{\extrarowheight}{0pt}
+            \addtolength{\extrarowheight}{\aboverulesep}
+            \addtolength{\extrarowheight}{\belowrulesep}
+            \setlength{\aboverulesep}{0pt}
+            \setlength{\belowrulesep}{0pt}
+            \begin{longtable}{r|ll|ll|l|l|l}
+                \caption{Models components comparative table}\label{tab:comparative}\\
+                \rowcolor[rgb]{0.914,0.914,0.914} \multicolumn{1}{c|}{\textbf{Model}}                                 & \multicolumn{1}{c}{\textbf{Training Size}}                       & \multicolumn{1}{c|}{\textbf{Training Time}} & \multicolumn{1}{c}{\textbf{Inference Size}} & \multicolumn{1}{c|}{\textbf{Inference Time}} & \multicolumn{1}{c|}{\textbf{Accuracy}}    & \multicolumn{1}{c|}{\textbf{Class qte.}} & \multicolumn{1}{c}{\textbf{Parameters}}                                                                                                                                                                                                                                                                                                                    \endfirsthead 
+                \toprule
+                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Scratch VGG Face-Descriptor}}           & \textasciitilde{}13151                                           & +20 hours                          & \texttt{N/A}                                         & +15 hours                           & \texttt{N/A}                                       & 105                                                       & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
+                \hdashline
+                \textit{YOLO-11n}                                                                                     & \texttt{N/A}                                                              & \texttt{N/A}                                         & 17534                                       & 20 minutes                                   & \texttt{N/A}                                       & \texttt{N/A}                                                       & \texttt{batchSize}: 15                                                                                                                                                                                                                                                                                                                    \\ 
+                \hdashline[1pt/1pt]
+                \textit{Retina-Face [RGB]}                                                                            & \texttt{N/A}                                                              & \texttt{N/A}                                         & \textasciitilde{}17534                      & 15 to 20 hours                               & \texttt{N/A}                                       & \texttt{N/A}                                                       & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
+                \hdashline[1pt/1pt]
+                \textit{VGG16 (custom)}                                                                               & \textasciitilde{}13151 (75\% per celebrity) & +20 hours (aborted) & \texttt{N/A}                    & \texttt{N/A}                                          & \texttt{N/A}                                       & 105                                                       & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 8\\\texttt{epochs}: 20\\\texttt{optimizer}: SGD\\\texttt{loss}: CrossEntropy\\\texttt{learningRate} 0.005\\\texttt{momentum}: 0.9\\\texttt{train/test split seed}: 0\end{tabular}  \\ 
+                \hhline{--------}
+                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Simple Gray-CNN}}                       & 14038                                                            & \textasciitilde{}16 hours                      & 3462                                        & \textasciitilde{}10 minutes                     & 0.17                                      & 105                                                       & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
+                \hdashline
+                \textit{Batch-Face [Gray]}                                                                            & \texttt{N/A}                                                              & \texttt{N/A}                                         & 17534                                       & 9 minutes                                    & \texttt{N/A}                                       & \texttt{N/A}                                                       & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{threshold}: 0.95\end{tabular}                                                                                                                                                                                                                                \\ 
+                \hdashline[1pt/1pt]
+                \textit{Simple CNN}                                                                                   & 14038 (80\% per celebrity)                                       & 16 hours                     & 3462 (20\% per celebrity)                   & 32 seconds                                   & 0.17 (w: 0.15)                     & 105                                                       & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{epochs}: 200\\\texttt{optimizer}: Adam\\\texttt{loss}: CrossEntropy\\\texttt{train/test split seed}: 0\end{tabular}                                                                                       \\ 
+                \hline
+                \hhline{--------}
+                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Pre-trained VGG Face-Descriptor [Gray]}} & \texttt{N/A}                                                              & \texttt{N/A}                                         & 6131                   & \multicolumn{1}{l|}{20 minutes}               & \multicolumn{1}{l|}{0.66}                  & \multicolumn{1}{l|}{38}                                    & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
+                \hdashline
+                \multicolumn{1}{r|}{\textit{Batch-Face [Gray]}}                                                        & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 17534                                       & \multicolumn{1}{l|}{9 minutes}                & \multicolumn{1}{l|}{\texttt{N/A}}                   & \multicolumn{1}{l|}{\texttt{N/A}}                                   & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{threshold}: 0.95\end{tabular}                                                                                                                                                                                                                                \\
+                \hdashline[1pt/1pt]
+                \multicolumn{1}{r|}{\textit{Pre-trained VGG Face-Descriptor [Gray]}}                                   & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 6131                                        & \multicolumn{1}{l|}{11 minutes}               & \multicolumn{1}{l|}{0.66 (w: 0.77)} & \multicolumn{1}{l|}{38}                                    & \begin{tabular}[c]{@{}l@{}}\texttt{weights}:~rcmalli\_\\vggface\_tf\_vgg16.h5\\\texttt{batchSize}: 100\end{tabular}                                                                                                                                                                                                      \\
+                \hhline{--------}
+                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Pre-trained VGG Face-Descriptor [RGB]}}  & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 6131                                        & \multicolumn{1}{l|}{20 minutes}               & \multicolumn{1}{l|}{}                      & \multicolumn{1}{l|}{38}                                    & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\
+                \hdashline
+                \multicolumn{1}{r|}{\textit{Batch-Face [RGB]}}                                                         & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 17534                                       & \multicolumn{1}{l|}{9 minutes}                & \multicolumn{1}{l|}{\texttt{N/A}}                   & \multicolumn{1}{l|}{\texttt{N/A}}                                   & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{threshold}: 0.95\end{tabular}                                                                                                                                                                                                                                \\
+                \hdashline[1pt/1pt]
+                \multicolumn{1}{r|}{\textit{Pre-trained VGG Face-Descriptor [RGB]}}                                    & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 6131                                        & \multicolumn{1}{l|}{11 minutes}               & \multicolumn{1}{l|}{0.64 (w: 0.75)} & \multicolumn{1}{l|}{38}                                    & \begin{tabular}[c]{@{}l@{}}\texttt{weights}:~rcmalli\_\\vggface\_tf\_vgg16.h5\\\texttt{batchSize}: 100\end{tabular}                                                                                                                                                                                                     
+            \end{longtable}
+        }
+    \end{landscape}
+    \twocolumn
+
+
+% Generated through https://www.latex-tables.com/
 
 
 
