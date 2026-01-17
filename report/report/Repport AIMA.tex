@@ -10,6 +10,7 @@
 
 \documentclass[9pt,twocolumn,twoside]{ilcss}
 \usepackage{amsthm}
+\usepackage{tablefootnote}
 \usepackage{amsmath}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -40,7 +41,6 @@
 
 % Use letters for affiliations, numbers to show equal authorship (if applicable) and to indicate the corresponding author
 \author[a]{Arno Lesage (no. 22202985)}
-\author[a]{Minh Quan Hoang  (no. hm509118)}
 
 \affil[a]{Université Côte d'Azur EUR - DS4H - Master 1 Informatique, parcours IA}
 % Please include corresponding author, author contribution and author declaration information
@@ -50,8 +50,14 @@
 % Keywords are not mandatory, but authors are strongly encouraged to provide them. If provided, please include two to five keywords, separated by the pipe symbol, e.g:
 \keywords{Face-Recognition $|$ CNN $|$ VGG-faces $|$ Preprocessing}
 
+%\begin{abstract}
+%Please provide an abstract of no more than 250 words in a single paragraph. Abstracts should explain to the general reader the major contributions of the article. References in the abstract must be cited in full within the abstract itself and cited in the text.
+%\end{abstract}
+
 \begin{abstract}
-Please provide an abstract of no more than 250 words in a single paragraph. Abstracts should explain to the general reader the major contributions of the article. References in the abstract must be cited in full within the abstract itself and cited in the text.
+    Face Recognition is a classical application of computer vision both for testing experimental models and privacy applications including identification and surveillance.
+    While computing the similarity between faces can be seen as straightforward, mapping the aforementioned faces to the name of their owner can be considered a challenge.
+    In this report, we investigate multiple processing pipeline to achieve this goal through the usage of different Convolutional Neural Network. 
 \end{abstract}
 
 \begin{document}
@@ -254,27 +260,67 @@ Please provide an abstract of no more than 250 words in a single paragraph. Abst
         \label{fig:VGGPretrained-rgb}
     \end{figure}
 
+    \begin{remark}
+        In these confusion matrices, we observe that the diagonal is well filled, and that almost no confusion was made between the 38 celebrities of the subset, which is a really good sign. However, we also observe the apparition of a line in the right which corresponds to misclassification of the aforementioned celebrities to other celebrities which are included within the VGG-Faces dataset, but not in the Pins Face Recognition dataset.
+        For some reason, some celebrities are simply not recognised like Elon Musk or Mark Zuckerberg, but without access to VGG-Face, we cannot really explain why.
+    \end{remark}
+
     \subsection{Comparison of the models}
 
     Now that we have briefly seen each model we will use, we want to compare them together. On table \ref{tab:comparative}, you will find the details for all the models and their respective pipeline.
 
-    Lorem Ipsum
+    \subsubsection*{Training time}
+    In this table, we observe multiple things. First, for the training time, we observe that the \texttt{Scratch VGG Face-Descriptor} model is the one taking the biggest training time with at least 20 hours for the sole purpose of training the CNN (without probant results). To this, add-up the the inference time of the Retina-Face model for the preprocessing of the data which make the model pile between 15 and 20 additional hours for the full pipeline training. As mentioned, this long pipeline training is due to two factors: the \textit{Retina-Face} preprocessing step which do not support batches as well as the VGG16 model itself, which reveals to have approximately 145 millions of trainable parameters rendering any fast training attempts futile while using a CPU.
+    The second longest model to train is of course the \texttt{Simple Gray-CNN} model with approximately 16 hours to train the CNN itself and 9 minutes for the preprocessing steps using \textit{Batch-Face}. Here, despite the number of parameters falling to approximately 67000, the training time of the CNN remains long on the CPU, but contrary to the preceding model, this one achieved 200 epochs (20 for the first model) and therefore was able to have at least some results.
+    Finally, the other models, already pre-trained, does not need any training, making them ready-to-use and the faster to set-up.
+    
+    In the end, we have the following partial order on the full training pipeline:
+    \begin{align*}
+       & \texttt{Scratch VGG Face-Descriptor}\ \text{[+35h, 8.55 s/picture]} \preceq\\ 
+       & \texttt{Simple Gray-CNN}\ \text{[}\!\sim\!\text{16h, 4.13 s/picture]} \preceq\\
+       & \texttt{Pre-trained VGG Face-Descriptor (Gray, RGB)}\ \text{[0h]}
+    \end{align*}
 
-    Lorem Ipsum
+    \subsubsection*{Inference time}
+    Concerning the inference time, the comparison is straightforward. First, no inferences were made for the model \texttt{Scratch VGG Face-Descriptor} because the training was aborted.
+    For the second model \texttt{Simple Gray-CNN}, we observe that the total inference time of the model corresponds to the one of the \textit{Simple CNN}, which translates into 32 seconds (we already counted \textit{Batch-Face [Gray]} in the training context), thus making it the fastest model we have at inference. This observation could be explained by the low number of parameters.
+    Finally, the two last models have almost identical inference time, 20 minutes in total including the preprocessing which was not made in the training context (which is absent for these models) and 11 minutes for the inferences only.
+    
+    In the end, we have the following partial order on the full inference pipeline:
+    \begin{align*}
+       & \texttt{Scratch VGG Face-Descriptor}\ \text{[Unknown]} \preceq\\ 
+       & \texttt{Pre-trained VGG [...]}\ \text{[20 min, 0.14 s/picture]}\preceq\\
+       & \texttt{Simple Gray-CNN}\ \text{[32s, 0.009 s/picture]}
+    \end{align*}
 
-    Lorem Ipsum
+    \subsubsection*{Accuracy}
+    For the accuracies, we made the following observations. First, setting aside \texttt{Scratch VGG Face-Descriptor} for which no inferences were made, we observe that the lowest accuracy is achieved by the \texttt{Simple Gray-CNN} model with a weighted accuracy of 0.15 and an accuracy of 0.17. Albeit fragile, this accuracy is not disastrous; indeed, it is still far better than random classification over 105 classes. This can be explained by the used CNN architecture, which even small, can still capture some pattern in the pictures.
+    The second worst accuracy is given by the \texttt{Pre-trained VGG Face-Descriptor [RGB]} model with a weighted accuracy of 0.75 and an accuracy of 0.64. This very high accuracy can directly be explained by the weights being pre-trained on a very similar dataset, while the loss compared to perfect accuracy can be explained by the introduction of foreign labels, which add more mismatch possibilities.
+    Finally, the best accuracy is achieved by the \texttt{Pre-trained VGG Face-Descriptor [Gray]} model with an accuracy of 0.66 and a weighted accuracy of 0.77. Here the explanation for the accuracy is very similar to the one before, but we can also consider that a slight upgrade can be attributed to the change of color scale, which seems to have concentrated the informations in a context where luminosity and colour changes are highly variable from pictures to pictures.
 
-    Lorem Ipsum
+    In the end, we have the following partial order on the accuracies:
+    \begin{align*}
+       & \texttt{Scratch VGG Face-Descriptor}\ \text{[Unknown]} \preceq\\ 
+       & \texttt{Simple Gray-CNN}\ \text{[0.17, w: 0.15]} \preceq\\
+       & \texttt{Pre-trained VGG Face-Descriptor (RGB)}\ \text{[0.64, w: 0.75]}\preceq\\
+       & \texttt{Pre-trained VGG Face-Descriptor (Gray)}\ \text{[0.66, w: 0.77]}
+    \end{align*}
 
-    Lorem Ipsum
+    \begin{remark}
+        Here, the difference of range between the accuracies and the weighted accuracies confirms what we saw earlier, namely the imbalance in our data, and that this imbalance is probably dominant in our 38 celebrities subset.
+    \end{remark}
+    
+    \subsubsection*{Number of supported classes}
+    For this matter, we will not extend that much, but in our case, only two models are capable of recognising all the actors \texttt{Scratch VGG Face-Descriptor} and \texttt{Simple Gray-CNN}, the others are not capable of that because the pre-trained weights they are using does not include of the one in our dataset. Thus rendering the two first "broader".
 
-    Lorem Ipsum
+    \subsubsection*{How to choose a model?}
+    Finally, we might have to make a choice supported by the aforementioned metrics between our models.
+    
+    Considering that, if we want to build upon a ready-to-use model, we would just choose the one with no required training and the highest accuracy, which would results into choosing the \texttt{Pre-trained VGG Face-Descriptor [Gray]} model. This model would also have been the predominant choice if we would have considered accuracy important especially in a context where less classes are to be predicted.
 
-    Lorem Ipsum
+    In another context, where the inference time must be as fast as possible, we would directly recommend the \texttt{Simple Gray-CNN} model, which exhibit very fast inferences, but at the cost of long training and poor accuracy. This model, would have also been chosen if we were in a context where broad inferences where important.
 
-    Lorem Ipsum
-
-
+    In the end, two models are standing out: \texttt{Simple Gray-CNN} for its fast inferences on all the celebrities and \texttt{Pre-trained VGG Face-Descriptor [Gray]} for its "absence" of training and its higher accuracies.
 
     \onecolumn
     \begin{landscape}
@@ -297,42 +343,61 @@ Please provide an abstract of no more than 250 words in a single paragraph. Abst
                 \hdashline[1pt/1pt]
                 \textit{VGG16 (custom)}                                                                               & \textasciitilde{}13151 (75\% per celebrity) & +20 hours (aborted) & \texttt{N/A}                    & \texttt{N/A}                                          & \texttt{N/A}                                       & 105                                                       & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 8\\\texttt{epochs}: 20\\\texttt{optimizer}: SGD\\\texttt{loss}: CrossEntropy\\\texttt{learningRate} 0.005\\\texttt{momentum}: 0.9\\\texttt{train/test split seed}: 0\end{tabular}  \\ 
                 \hhline{--------}
-                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Simple Gray-CNN}}                       & 14038                                                            & \textasciitilde{}16 hours                      & 3462                                        & \textasciitilde{}10 minutes                     & 0.17                                      & 105                                                       & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
+                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Simple Gray-CNN}}                       & 14038                                                            & \textasciitilde{}16 hours                      & 3462                                        & \textasciitilde{}10 minutes                     & 0.17 (w: 0.15)                                     & 105                                                       & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
                 \hdashline
                 \textit{Batch-Face [Gray]}                                                                            & \texttt{N/A}                                                              & \texttt{N/A}                                         & 17534                                       & 9 minutes                                    & \texttt{N/A}                                       & \texttt{N/A}                                                       & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{threshold}: 0.95\end{tabular}                                                                                                                                                                                                                                \\ 
                 \hdashline[1pt/1pt]
                 \textit{Simple CNN}                                                                                   & 14038 (80\% per celebrity)                                       & 16 hours                     & 3462 (20\% per celebrity)                   & 32 seconds                                   & 0.17 (w: 0.15)                     & 105                                                       & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{epochs}: 200\\\texttt{optimizer}: Adam\\\texttt{loss}: CrossEntropy\\\texttt{train/test split seed}: 0\end{tabular}                                                                                       \\ 
                 \hline
                 \hhline{--------}
-                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Pre-trained VGG Face-Descriptor [Gray]}} & \texttt{N/A}                                                              & \texttt{N/A}                                         & 6131                   & \multicolumn{1}{l|}{20 minutes}               & \multicolumn{1}{l|}{0.66}                  & \multicolumn{1}{l|}{38}                                    & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
+                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Pre-trained VGG Face-Descriptor [Gray]}} & \texttt{N/A}                                                              & \texttt{N/A}                                         & 6131                   & \multicolumn{1}{l|}{20 minutes}               & \multicolumn{1}{l|}{0.66 (w: 0.77)}                  & \multicolumn{1}{l|}{38}                                    & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\ 
                 \hdashline
                 \multicolumn{1}{r|}{\textit{Batch-Face [Gray]}}                                                        & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 17534                                       & \multicolumn{1}{l|}{9 minutes}                & \multicolumn{1}{l|}{\texttt{N/A}}                   & \multicolumn{1}{l|}{\texttt{N/A}}                                   & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{threshold}: 0.95\end{tabular}                                                                                                                                                                                                                                \\
                 \hdashline[1pt/1pt]
                 \multicolumn{1}{r|}{\textit{Pre-trained VGG Face-Descriptor [Gray]}}                                   & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 6131                                        & \multicolumn{1}{l|}{11 minutes}               & \multicolumn{1}{l|}{0.66 (w: 0.77)} & \multicolumn{1}{l|}{38}                                    & \begin{tabular}[c]{@{}l@{}}\texttt{weights}:~rcmalli\_\\vggface\_tf\_vgg16.h5\\\texttt{batchSize}: 100\end{tabular}                                                                                                                                                                                                      \\
                 \hhline{--------}
-                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Pre-trained VGG Face-Descriptor [RGB]}}  & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 6131                                        & \multicolumn{1}{l|}{20 minutes}               & \multicolumn{1}{l|}{}                      & \multicolumn{1}{l|}{38}                                    & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\
+                \rowcolor[rgb]{0.973,0.973,0.973} \multicolumn{1}{c|}{\textbf{Pre-trained VGG Face-Descriptor [RGB]}}  & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 6131                                        & \multicolumn{1}{l|}{20 minutes}               & \multicolumn{1}{l|}{0.64 (w: 0.75)}                      & \multicolumn{1}{l|}{38}                                    & \texttt{N/A}                                                                                                                                                                                                                                                                                                                                                        \\
                 \hdashline
                 \multicolumn{1}{r|}{\textit{Batch-Face [RGB]}}                                                         & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 17534                                       & \multicolumn{1}{l|}{9 minutes}                & \multicolumn{1}{l|}{\texttt{N/A}}                   & \multicolumn{1}{l|}{\texttt{N/A}}                                   & \begin{tabular}[c]{@{}l@{}}\texttt{batchSize}: 100\\\texttt{threshold}: 0.95\end{tabular}                                                                                                                                                                                                                                \\
                 \hdashline[1pt/1pt]
                 \multicolumn{1}{r|}{\textit{Pre-trained VGG Face-Descriptor [RGB]}}                                    & \texttt{N/A}                                                              & \multicolumn{1}{l|}{\texttt{N/A}}                     & 6131                                        & \multicolumn{1}{l|}{11 minutes}               & \multicolumn{1}{l|}{0.64 (w: 0.75)} & \multicolumn{1}{l|}{38}                                    & \begin{tabular}[c]{@{}l@{}}\texttt{weights}:~rcmalli\_\\vggface\_tf\_vgg16.h5\\\texttt{batchSize}: 100\end{tabular}                                                                                                                                                                                                     
             \end{longtable}
         }
+        \begin{remark}
+            The inference time refer to the total amount of time passed on inferences \textbf{in the pipeline}. Therefore, inferences of \textit{Batch-Face} can be interpreted as inference time in a training context for preprocessing. The same remark apply for the training time.
+        \end{remark}
     \end{landscape}
     \twocolumn
 
 
 % Generated through https://www.latex-tables.com/
 
-
-
 \section*{Conclusion and Perspectives}
 
-In this work, we cite.
+    In this work, we explored the problem of face recognition and more precisely, how to associate a face to the name of the corresponding person. 
+    In a first section, we discussed on the Pins Face Recognition dataset \cite{PinFaces105Burak} used in this project, its characteristics and its limitations.
+
+    Then, in a second section, we established and unraveled the pipelines we were going to use, from a simple pipeline through the usage of \textit{YOLO} \cite{yolo11_ultralytics}, \textit{Retina-Face} and \textit{VGG} \cite{VGGFaceDescriptor} to a more complex pipeline including additional preprocessing steps, the removal of \textit{YOLO}, the usage of \textit{Batch-Face} and the test of different predictive models.
+
+    Finally, in a third section, we compared the different pipelines, defined their strengths and their weaknesses not only in both accuracies and training/inference times, but also in the number of supported classes for each models. 
+
+    In the end, we showed that our model choice depends heavily on our application and the surrounding context: Can we train for long? Is our system real-time? Do we care about high accuracies? and so on.
+
+    Concerning improvement area, a first possible improvement could be to try reducing the training time of our models by using the GPU for the computations instead of our CPU, thus greatly increasing parallelism possibilities. We could also mention the possibility of working with other preprocessing steps (even though this approach could only be performant with untrained weights, since we do not knows what were the preprocessing steps for the pre-trained weights), such additional steps could be PCA to concentrate the informations, light equaliser to attenuate the difference of light between the pictures, the transfer into other colour scale or simply the face alignement to remove the importance of face angle in our model. Finally, another possibility could be to perform data augmentation on our dataset in order to eliminate the bias we detected prior in this report. 
 
 \section*{Author's contributions}
+    \subsubsection*{Author's contributions}
+    The contributors of this project are: Arno Lesage (no. 22202985, \href{https://www.linkedin.com/in/arnolesage/}{LinkedIn}, \href{https://orcid.org/0009-0004-6738-9150}{ORCID}) and Minh Quan Hoang (no. hm509118, \href{https://www.linkedin.com/in/minh-quan-hoang-9308bb173/}{LinkedIn})
 
-\acknow{None}
-\showacknow{} % Display the acknowledgments section
+    The first contributor is Arno Lesage and his contributions are the following: literature research, code, experiments, report and interpretations of the results. 
+    The second contributor saw his name removed from this report upon his request, but I acknowledge his contribution at the very beginning of the project especially in the literature research.
+    
+    \subsubsection*{Author's presentations}
+    I am Arno Lesage, a student in first year Master in Computer Science, AI track at Université Côte d'Azur. I am graduated of a BEng in Data Science at IUT Côte d'Azur and spent my last bachelor year abroad at Johannes Kepler Universität Linz in BSc in AI, Computer Science and Data Science track.
+    During my multiple internships at i3S/CNRS labs, I had the opportunity to discover a research environment and publish a paper in Symbolic AI. 
+    
+    Following this and my bachelor thesis, at the Institut für Analysis, on a probabilistic dynamical system, I am now interested in pursuing a PhD in the symbolic side of AI and the study dynamical systems at large.
+    
 
 \bibliography{references}
 
