@@ -19,6 +19,9 @@ When both the virtual environnement and the working directory are set up, you mu
 ```shell
 pip install -r requirements.txt
 ```
+
+To download the dataset and set it up properly, please follow the instruction in the <a href="src/src_img/PLACEHOLDER.txt">`src_img/PLACEHOLDER.txt`</a>. If the images are already in this directory, then you have nothing to do.
+
 ### Run
 #### Step 1: preprocessing and face extraction
 To run the project from the formerly `src` working directory and set up virtual environnement, you can run the script `RetinaExtractor.py` which will run the *Batch-Face model* to extract the faces from the `src_img` directory to the `working` and `working_coloured` directory.
