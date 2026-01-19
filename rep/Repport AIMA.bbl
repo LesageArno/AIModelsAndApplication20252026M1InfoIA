@@ -1,0 +1,52 @@
+\begin{thebibliography}{}
+
+\bibitem[Burak, 2019]{PinFaces105Burak}
+Burak (2019).
+\newblock Pins face recognition.
+\newblock https://www.kaggle.com/datasets/hereisburak/pins-face-recognition.
+
+\bibitem[Clcarwin, 2017]{convertTorch2PyTorch}
+Clcarwin (2017).
+\newblock converttorch2pytorch.
+\newblock https://github.com/clcarwin/convert\_torch\_to\_pytorch.
+
+\bibitem[Jocher and Qiu, 2024]{yolo11_ultralytics}
+Jocher, G. and Qiu, J. (2024).
+\newblock Ultralytics yolo11.
+\newblock https://github.com/ultralytics/ultralytics.
+
+\bibitem[Malli, 2017]{rcmalliKerasVGGFaces}
+Malli, R.~C. (2017).
+\newblock Keras vgg face.
+\newblock https://github.com/rcmalli/keras-vggface/releases/.
+
+\bibitem[Parkhi et~al., 2015a]{Parkhi2015DeepFR}
+Parkhi, O.~M., Vedaldi, A., and Zisserman, A. (2015a).
+\newblock Deep face recognition.
+\newblock In {\em BMVC}.
+
+\bibitem[Parkhi et~al., 2015b]{VGGFaceDescriptor}
+Parkhi, O.~M., Vedaldi, A., and Zisserman, A. (2015b).
+\newblock {{VGG} Face Descriptor}.
+\newblock \url{https://www.robots.ox.ac.uk/~vgg/software/vgg_face}.
+
+\bibitem[Serengil and Ozpinar, 2024]{serengil2024lightface}
+Serengil, S. and Ozpinar, A. (2024).
+\newblock A benchmark of facial recognition pipelines and co-usability performances of modules.
+\newblock {\em Journal of Information Technologies}, 17(2):95--107.
+
+\bibitem[Shillingford, 2016]{torchfile}
+Shillingford, B. (2016).
+\newblock Torchfile.
+\newblock https://github.com/bshillingford/python-torchfile.
+
+\bibitem[Simonyan and Zisserman, 2015]{simonyan2015deepconvolutionalnetworkslargescale}
+Simonyan, K. and Zisserman, A. (2015).
+\newblock Very deep convolutional networks for large-scale image recognition.
+
+\bibitem[Zheng, 2025]{batchFace}
+Zheng, E. (2025).
+\newblock batch-face.
+\newblock https://github.com/elliottzheng/batch-face.
+
+\end{thebibliography}
